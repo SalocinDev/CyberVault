@@ -1,3 +1,4 @@
+import React from "react";
 import { Image, ImageSourcePropType, Pressable, StyleSheet, Text } from "react-native";
 
 type ButtonProps = {

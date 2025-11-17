@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View, Image } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import * as ImagePicker from 'expo-image-picker';
-import { Button } from 'react-native';
-import { FlatList } from 'react-native';
+import GeneralModal from '@/components/ui/general-modal';
 import { styles } from '@/style/global';
+import Entypo from '@expo/vector-icons/Entypo';
+import Octicons from '@expo/vector-icons/Octicons';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, FlatList, GestureResponderEvent, Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { IconSymbol } from './ui/icon-symbol';
 
 export default function Ribbon() {
     type ModalState = "Upload" | "Search" | "Options" | "";
@@ -15,52 +16,70 @@ export default function Ribbon() {
     const [modalState, setModalState] = useState<ModalState>("");
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
-    const pickImages = async () => {
+    const pickMedia = async () => {
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (!permissionResult.granted) {
             Alert.alert("Permission to access camera roll is required!");
             return;
         }
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsMultipleSelection: true,
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            const uris = result.assets.map(asset => asset.uri);
-            setSelectedImages(uris);
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.All,
+                allowsMultipleSelection: true,
+                quality: 1,
+            });
+            if (!result.canceled) {
+                const uris = result.assets.map(asset => asset.uri);
+                setSelectedImages(uris);
+            }
+        } catch (error) {
+            console.log("Error picking media:", error);
+            Alert.alert("Error picking media");
         }
     };
-
     const handleUploadPress = () => {
         setSelectedImages([]);
         setModalVisible(true);
         setModalState("Upload");
     };
-
-    const handleSearchPress = () => {
-        setModalVisible(true);
-        setModalState("Search");
-    };
-
-    const handleOptionsPress = () => {
-        setModalVisible(true);
-        setModalState("Options");
-    };
-
     const handleUpload = () => {
         Alert.alert('Upload Complete');
         setModalVisible(false);
     };
+    function handleSettingsPress(event: GestureResponderEvent): void {
+        router.push("/settings");
+    }
+    function handleSearchPress(event: GestureResponderEvent): void {
+        router.push("/vault")
+    }
 
-    function renderModalContent(state: string) {
-        switch (state) {
-            case "Upload":
-                return (
+    return (
+        <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
+            <View style={styles.containerRibbon}>
+             
+                <View style={styles.textStack}>
+                    <Text style={styles.titleLeft}>CyberVault</Text>
+                    <Text style={styles.subtitleLeft}>Personal data protection app</Text>
+                </View>
+                
+                <View style={{ marginLeft: 'auto', flexDirection: 'row', gap: 5 }}>
+                    <Pressable onPress={handleUploadPress} style={styles.iconShroudIsolated}>
+                        <Octicons name="upload" size={30} color="white" />
+                    </Pressable>
+                    <Pressable onPress={handleSearchPress} style={styles.iconShroud}>
+                        <Entypo name="magnifying-glass" size={30} color="#ffffffff" />
+                    </Pressable>
+                    <Pressable onPress={handleSettingsPress} style={styles.iconShroud}>
+                        <IconSymbol size={30} name="gear" color="#ffffffff" />
+                    </Pressable>
+                </View>
+            </View>
+            
+            <GeneralModal visible={modalVisible} onClose={() => setModalVisible(false)}>
+                {modalState === 'Upload' && (
                     <>
                         <Text style={styles.titleRibbon}>Upload</Text>
-                        <TouchableOpacity style={styles.blackButton} onPress={pickImages}>
+                        <TouchableOpacity style={styles.fileButton} onPress={pickMedia}>
                             <Text style={styles.blackButtonText}>Choose File</Text>
                         </TouchableOpacity>
                         {selectedImages.length > 0 ? (
@@ -72,9 +91,7 @@ export default function Ribbon() {
                                     style={styles.imagesContainer}
                                     showsVerticalScrollIndicator={true}
                                     contentContainerStyle={{ justifyContent: 'center', flexGrow: 0 }}
-                                    renderItem={({ item }) => (
-                                        <Image source={{ uri: item }} style={styles.image} />
-                                    )}
+                                    renderItem={({ item }) => <Image source={{ uri: item }} style={styles.image} />}
                                 />
                                 <TouchableOpacity style={styles.blackButton} onPress={handleUpload}>
                                     <Text style={styles.blackButtonText}>Upload</Text>
@@ -84,59 +101,10 @@ export default function Ribbon() {
                             <Text style={styles.subtitleBlack}>No Images Selected</Text>
                         )}
                     </>
-                );
-            case "Search":
-                return <Text style={styles.title}>{modalState}</Text>;
-            case "Options":
-                return <Text style={styles.title}>{modalState}</Text>;
-            default:
-                return <Text>Unknown modal state.</Text>;
-        }
-    }
-
-    return (
-        <SafeAreaView style={styles.safeArea} edges={['left', 'right']}>
-            <View style={styles.containerRibbon}>
-                <View style={styles.textStack}>
-                    <Text style={styles.titleLeft}>CyberVault</Text>
-                    <Text style={styles.subtitleLeft}>Personal data protection app</Text>
-                </View>
-                <View style={{ marginLeft: 'auto', flexDirection: 'row', gap: 12 }}>
-                    <Pressable onPress={handleUploadPress} style={styles.iconShroud}>
-                        <IconSymbol size={iconSize} name="square.and.arrow.down.fill" color="#ffffffff" />
-                    </Pressable>
-                    <Pressable onPress={handleSearchPress} style={styles.iconShroud}>
-                        <IconSymbol size={iconSize} name="magnifyingglass" color="#ffffffff" />
-                    </Pressable>
-                    <Pressable onPress={handleOptionsPress} style={styles.iconShroud}>
-                        <IconSymbol size={iconSize} name="ellipsis" color="#ffffffff" />
-                    </Pressable>
-                </View>
-            </View>
-            <Modal
-                visible={modalVisible}
-                animationType="fade"
-                transparent={true}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                        <View style={styles.modalOverlayTouchableArea} />
-                    </TouchableWithoutFeedback>
-                    <View
-                        style={styles.modalContent}
-                        onStartShouldSetResponder={() => true}
-                    >
-                        {renderModalContent(modalState)}
-
-                        <TouchableOpacity onPress={() => setModalVisible(false)}>
-                            <View>
-                                <Text style={{ color: 'black', marginTop: 20 }}>Close</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+                )}
+                {modalState === 'Search' && <Text style={styles.title}>{modalState}</Text>}
+                {modalState === 'Options' && <Text style={styles.title}>{modalState}</Text>}
+            </GeneralModal>
         </SafeAreaView>
     );
 }

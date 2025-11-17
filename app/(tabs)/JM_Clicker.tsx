@@ -1,6 +1,6 @@
-import JmClicker from "@/assets/images/JmClicker.jpg";
+import JmClicker from "@/assets/images/JmClicker.png";
 import { Button } from "@/components/clickable-button";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function ButtonScreen() {

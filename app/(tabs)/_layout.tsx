@@ -1,13 +1,15 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { HapticTab } from '@/components/haptic-tab';
+import Ribbon from '@/components/ribbon';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
+
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import Ribbon from '@/components/ribbon';
+import Feather from '@expo/vector-icons/Feather';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Tabs } from 'expo-router';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -25,42 +27,42 @@ export default function TabLayout() {
           name="home"
           options={{
             title: 'Home',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="home" size={20} color={color} />,
           }}
         />
         <Tabs.Screen
           name="vault"
           options={{
             title: 'Vault',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="doc.text" color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="document-text-outline" size={20} color={color} />,
           }}
         />
         <Tabs.Screen
           name="passwords"
           options={{
             title: 'Passwords',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="key.fill" color={color} />,
+            tabBarIcon: ({ color }) => <Feather name="key" size={20} color={color} />,
           }}
         />
         <Tabs.Screen
           name="monitor"
           options={{
             title: 'Monitor',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="alarm.fill" color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="security"
-          options={{
-            title: 'Security',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="shield.fill" color={color} />,
+            tabBarIcon: ({ color }) => <Ionicons name="warning-outline" size={20} color={color} />,
           }}
         />
         <Tabs.Screen
           name="JM_Clicker"
           options={{
             title: 'JM_Clicker',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="cursorarrow" color={color} />,
+            tabBarIcon: ({ color }) => <IconSymbol size={20} name="cursorarrow" color={color} />,
+          }}
+        />        
+        <Tabs.Screen
+          name="settings"
+          options={{
+            title: 'Settings',
+            tabBarIcon: ({ color }) => <IconSymbol size={20} name="gear" color={color} />,
           }}
         />
       </Tabs>

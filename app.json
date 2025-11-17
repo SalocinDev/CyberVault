@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CyberVault",
-    "slug": "CyberVault",
+    "slug": "clicker-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -40,7 +40,9 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -51,6 +53,7 @@
       "eas": {
         "projectId": "533c45bb-49a8-47fc-bd3f-e0961efb4d76"
       }
-    }
+    },
+    "owner": "salocindev"
   }
 }

@@ -12,7 +12,7 @@ const documentDirectory = FS.documentDirectory ?? FS.cacheDirectory ?? '';
 const encryptionKey = 'shhhhhhhhh';
 
 export async function encryptMediaToFile(uri: string): Promise<string> {
-  const base64 = await FS.readAsStringAsync(uri, { encoding: 'base64' });
+  const base64 = await FS.readAsStringAsync(uri, { encoding: FS.EncodingType.Base64 });
 
   const iv = CryptoJS.lib.WordArray.random(16);
   const key = CryptoJS.enc.Utf8.parse(encryptionKey);
@@ -21,7 +21,7 @@ export async function encryptMediaToFile(uri: string): Promise<string> {
   const combined = iv.toString(CryptoJS.enc.Base64) + ':' + encrypted.toString();
 
   const encryptedUri = `${documentDirectory}encrypted_media.enc`;
-  await FS.writeAsStringAsync(encryptedUri, combined, { encoding: 'utf8' });
+  await FS.writeAsStringAsync(encryptedUri, combined, { encoding: FS.EncodingType.UTF8 });
 
   return encryptedUri;
 }
