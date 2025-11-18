@@ -51,20 +51,20 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <Ionicons name="warning-outline" size={20} color={color} />,
           }}
         />
-        <Tabs.Screen
+{/*         <Tabs.Screen
           name="JM_Clicker"
           options={{
             title: 'JM_Clicker',
             tabBarIcon: ({ color }) => <IconSymbol size={20} name="cursorarrow" color={color} />,
           }}
-        />        
-        <Tabs.Screen
+        />  */}       
+{/*         <Tabs.Screen
           name="settings"
           options={{
             title: 'Settings',
             tabBarIcon: ({ color }) => <IconSymbol size={20} name="gear" color={color} />,
           }}
-        />
+        /> */}
       </Tabs>
     </SafeAreaView>
   );

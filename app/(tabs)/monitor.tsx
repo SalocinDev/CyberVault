@@ -8,7 +8,7 @@ import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View, FlatList } 
 import * as SecureStore from 'expo-secure-store';
 
 export default function Monitor() {
-  type ModalState = "SearchBreach" | "ViewBreach" | "";
+  type ModalState = "SearchBreach" | "ViewBreach" | "SearchOptions" | "";
   type ModalSearchResultState = "SearchSuccess" | "";
   
   interface BreachEntry {
@@ -26,6 +26,7 @@ export default function Monitor() {
   const [modalSearchResultState, setModalSearchResultState] = useState<ModalSearchResultState>("");
   const [modalSearchResultVisible, setModalSearchResultVisible] = useState<boolean>(false);
   const [searchResult, setSearchResult] = useState<any>(null);
+  const [selectedResultForOptions, setSelectedResultForOptions] = useState<any>(null)
   const [email, setEmail] = useState("");
   const router = useRouter();
   const iconSize = 50;
@@ -78,6 +79,7 @@ export default function Monitor() {
         setModalVisible(false);
         setModalSearchResultState("SearchSuccess");
         setModalSearchResultVisible(true);
+        setEmail("");
       })
       .catch(error => {
         console.error("Error Searching:", error);
@@ -116,6 +118,31 @@ export default function Monitor() {
     }
   };
 
+  const deleteSearchResult = async () => {
+    if (!selectedResultForOptions) return;
+
+    try {
+      const stored = await SecureStore.getItemAsync("breach_searches");
+      const existing: BreachEntry[] = stored ? JSON.parse(stored) : [];
+
+      const updated = existing.filter(entry => entry.id !== selectedResultForOptions);
+
+      await SecureStore.setItemAsync("breach_searches", JSON.stringify(updated));
+      setBreachList(updated);
+
+      const totalBreaches = updated.reduce(
+        (acc, entry) => acc + (entry.breaches?.length || 0),
+        0
+      );
+      setBreachDetections(totalBreaches);
+
+      setModalVisible(false);
+      Alert.alert("Deleted Successfully");
+    } catch (error) {
+      console.error("Error deleting search:", error);
+      Alert.alert("Error deleting search");
+    }
+  };
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
@@ -153,6 +180,11 @@ export default function Monitor() {
                   onPress={() => {
                     setSelectedBreach(item);
                     setModalState("ViewBreach");
+                    setModalVisible(true);
+                  }}
+                  onLongPress={() => {
+                    setSelectedResultForOptions(item.id)
+                    setModalState("SearchOptions");
                     setModalVisible(true);
                   }}
                 >
@@ -241,6 +273,18 @@ export default function Monitor() {
           </View>
         )}
       </GeneralModal>
+      <GeneralModal visible={modalVisible && modalState === "SearchOptions"} onClose={() => setModalVisible(false)}>
+        <View>
+          <Text style={styles.subtitleBlack}>Options</Text>
+          <TouchableOpacity 
+            style={styles.redButton} 
+            onPress={deleteSearchResult}
+          >
+            <Text style={styles.redButtonText}>Delete Search</Text>
+          </TouchableOpacity>
+        </View>
+      </GeneralModal>
+
     </ScrollView>
   );
 }
