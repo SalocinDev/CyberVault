@@ -58,7 +58,7 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <IconSymbol size={20} name="cursorarrow" color={color} />,
           }}
         />  */}       
-{/*         <Tabs.Screen
+{/*<Tabs.Screen
           name="settings"
           options={{
             title: 'Settings',
